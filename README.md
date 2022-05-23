@@ -1,4 +1,4 @@
-# Neural_DV_ATAC
+# Neural DV ATAC
 Scripts for manuscript 
 
 Custom code to reproduce all figures. 
