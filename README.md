@@ -3,4 +3,8 @@ Scripts for manuscript
 
 Custom code to reproduce all figures. 
 
-All figures generated using R can be visualized as markdown (.md files). Make links here: 
+All figures generated using R can be visualized as markdown (.md files). 
+
+
+Make links here: 
+- [Test script](1_test.md)
