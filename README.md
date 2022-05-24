@@ -10,7 +10,7 @@ Make links here:
 - [Test script](1_test.md)
 - CaTS-ATAC sequencing processing (using [nf-core](https://nf-co.re/atacseq)): 
     - [pipeline script](sh/run_cats-atac.sh)
-    - [fdr interval filtering](Neural_DV_ATAC/blob/main/NeuralDV_Rproject/cats-atac_1_filter_fdr.md)
+    - [fdr interval filtering](NeuralDV_Rproject/cats-atac_1_filter_fdr.md)
 - RNA-seq processing (using [nf-core](https://nf-co.re/rnaseq)): 
     - [pipeline script](sh/run_rnaseq.sh) 
     - [removal of PCR duplicates](R/R_geneCounts.R)
