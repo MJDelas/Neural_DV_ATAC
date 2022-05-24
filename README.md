@@ -13,13 +13,14 @@ Make links here:
 - RNA-seq processing (using [nf-core](https://nf-co.re/rnaseq)): 
     - [pipeline script](sh/run_rnaseq.sh) 
     - [removal of PCR duplicates](R/R_geneCounts.R)
-- Published ChIP-seq processing (using [nf-core](https://nf-co.re/chipseq)) : [summary and scripts](docs/chip-seq_processing.md)
-- Bulk ATAC-seq processing (using nf-core)
+- Published ChIP-seq processing (using [nf-core](https://nf-co.re/chipseq)) : 
+    - [summary and scripts](docs/chip-seq_processing.md)
+- Bulk ATAC-seq processing (using [nf-core](https://nf-co.re/atacseq)):
 - Comparison of accessibility across conditions
     - [Differential accessibility between SAG concentrations](NeuralDV_Rproject/cats-atac_3_cross_condition_diffacc.md)
 - Global accessibility analysis: PCA and differentially accessible elements selection
     - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
-- Heatmap visualization of ATAC-seq and ChIP-seq
+- Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
 - Footprinting score calculations (using TOBIAS) 
 - Most variable footprints across p0-M
 - Most variable footprints across all: p3-specific
