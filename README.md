@@ -16,12 +16,13 @@ Make links here:
 - Published ChIP-seq processing (using [nf-core](https://nf-co.re/chipseq)) : 
     - [summary and scripts](docs/chip-seq_processing.md)
 - Bulk ATAC-seq processing (using [nf-core](https://nf-co.re/atacseq)):
+    - [pipeline script](sh/run_atac-ifoxa2.sh)
 - Comparison of accessibility across conditions
     - [Differential accessibility between SAG concentrations](NeuralDV_Rproject/cats-atac_3_cross_condition_diffacc.md)
 - Global accessibility analysis: PCA and differentially accessible elements selection
     - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
 - Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
-- Footprinting score calculations (using TOBIAS) 
+- Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
 - Most variable footprints across p0-M
 - Most variable footprints across all: p3-specific
 - Differential accessibility in inducible Foxa2
