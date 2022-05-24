@@ -7,15 +7,17 @@ Source: Nishi et al (2015)
 
 PMID: 26293298, DOI: 10.1242/dev.124636
 
-GEO:
+GEO: GSE65462
 
 `nextflow run nf-core/chipseq --input design.csv --single_end --genome mm10 --email joaquina.delas@crick.ac.uk -profile crick -r 1.1.0 -resume`
 
 ## Neural embryoids with SAG: SOX2, FOXA2
 
-Peterson et al.(2012) 
+Source: Peterson et al.(2012) 
 
 PMID: 23249739, DOI: 10.1101/gad.207142.112
+
+GEO: GSE42594
 
 ```
 nextflow run nf-core/chipseq \
@@ -36,9 +38,9 @@ Available trackhubs: instructions in the [briscoelab wiki](https://briscoelab.gi
 
 Source: Cernilogar et al (2019)
 
-PMID
+PMID: PMID31350899, DOI: 10.1093/nar/gkz627
 
-GEO
+GEO: GSE116258
 
 Due to lack of input, these sampels were processed with the ATAC-seq pipeline, as follows:
 
