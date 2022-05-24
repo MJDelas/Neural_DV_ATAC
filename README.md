@@ -9,7 +9,7 @@ All figures generated using R can be visualized as markdown (.md files).
 Make links here: 
 - [Test script](1_test.md)
 - CaTS-ATAC sequencing processing (using [nf-core](https://nf-co.re/atacseq)): [script](sh/run_cats-atac.sh)
-- RNA-seq processing (using nf-core)
+- RNA-seq processing (using [nf-core](https://nf-co.re/rnaseq)): [script](sh/run_rnaseq.sh) followed by [removal of PCR duplicates](R/R_geneCounts.R)
 - Published ChIP-seq processing (using nf-core)
 - Bulk ATAC-seq processing (using nf-core)
 - Comparison of accessibility in cell type across SAG concentrations
