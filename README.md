@@ -18,6 +18,7 @@ Make links here:
 - Bulk ATAC-seq processing (using nf-core)
 - Comparison of accessibility in cell type across SAG concentrations
 - Global accessibility analysis: PCA and differentially accessible elements selection
+    - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
 - Heatmap visualization of ATAC-seq and ChIP-seq
 - Footprinting score calculations (using TOBIAS) 
 - Most variable footprints across p0-M
