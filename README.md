@@ -7,7 +7,6 @@ All figures generated using R can be visualized as markdown (.md files).
 
 
 Make links here: 
-- [Test script](1_test.md)
 - CaTS-ATAC sequencing processing (using [nf-core](https://nf-co.re/atacseq)): 
     - [pipeline script](sh/run_cats-atac.sh)
     - [fdr interval filtering](NeuralDV_Rproject/cats-atac_1_filter_fdr.md)
