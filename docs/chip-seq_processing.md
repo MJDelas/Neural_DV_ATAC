@@ -1,7 +1,7 @@
 
-# Processing of published ChIP-seq summary
+## Processing of published ChIP-seq summary
 
-## Neural embryoids with SAG: NKX6.1, NKX2.2, OLIG2
+### Neural embryoids with SAG: NKX6.1, NKX2.2, OLIG2
 
 Source: Nishi et al (2015) 
 
@@ -11,7 +11,7 @@ GEO: GSE65462
 
 `nextflow run nf-core/chipseq --input design.csv --single_end --genome mm10 --email joaquina.delas@crick.ac.uk -profile crick -r 1.1.0 -resume`
 
-## Neural embryoids with SAG: SOX2, FOXA2
+### Neural embryoids with SAG: SOX2, FOXA2
 
 Source: Peterson et al.(2012) 
 
@@ -34,7 +34,7 @@ nextflow run nf-core/chipseq \
 Available trackhubs: instructions in the [briscoelab wiki](https://briscoelab.github.io/wiki/BriscoeLab_trackhubs.html)
 
 
-## Endoderm differentiation: FOXA2
+### Endoderm differentiation: FOXA2
 
 Source: Cernilogar et al (2019)
 
