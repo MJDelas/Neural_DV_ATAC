@@ -1,0 +1,145 @@
+---
+title: "Filter intervals below threshold"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE}
+rm(list=ls())
+
+library(tidyverse)
+
+```
+
+## Load data
+
+The boolean file from nf-core/atacseq 
+  
+
+```{r }
+
+peaks_boolean <- read.delim(file="./inputs_cats-atac_1/consensus_peaks.mLb.clN.boolean.annotatePeaks.txt",header=TRUE, stringsAsFactors = FALSE)
+
+```
+
+```{r}
+
+peaks_boolean_clean <- peaks_boolean %>%
+  gather(variable, value, matches("^D[0-9]"))
+
+## clean empty columns
+## separate variable by first deleting .mLb.clN, then spliting with //.
+empty_cols <- c("Entrez.ID","Nearest.Unigene","Nearest.Refseq","Nearest.Ensembl","Gene.Name","Gene.Alias","Gene.Description","Gene.Type")
+peaks_boolean_clean2 <- peaks_boolean_clean %>% select(-all_of(empty_cols)) %>%
+  mutate(variable=gsub("\\.mLb\\.clN","", variable)) %>%
+  separate(variable, into = c("Sample","metric"), sep = "\\.", remove = FALSE)
+  
+peaks_boolean_clean3 <- peaks_boolean_clean2 %>%
+  select(-variable) %>%
+  spread(metric,value)
+
+
+#peaks_boolean_clean3 <- peak_olig2_33_test
+
+peaks_boolean_clean3$bool <- peaks_boolean_clean3$bool %>% as.logical()
+peaks_boolean_clean3$fc <- as.numeric(peaks_boolean_clean3$fc)
+peaks_boolean_clean3$pval <- as.numeric(peaks_boolean_clean3$pval)
+peaks_boolean_clean3$qval <- as.numeric(peaks_boolean_clean3$qval)
+
+
+
+peak_olig2_33_test <- peaks_boolean_clean3 %>% filter(interval_id=="Interval_75371")
+D4_0_1_R1_test <- peaks_boolean_clean3 %>% filter(Sample=="D4_0_1_R1")
+
+```
+
+
+
+```{r}
+
+ggplot(D4_0_1_R1_test, aes(x=Sample, y=qval)) +
+  geom_violin() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(D4_0_1_R1_test, aes(x=Sample, y=pval)) +
+  geom_violin() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(D4_0_1_R1_test, aes(x=Sample, y=fc)) +
+  geom_violin() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
+ggplot(D4_0_1_R1_test, aes(x=fc,y=qval)) +
+  geom_hex(bins = 200) +
+  scale_fill_continuous(type = "viridis") +
+  scale_x_log10() +
+  scale_y_log10() +
+  theme_bw()
+
+ggplot(D4_0_1_R1_test, aes(x=fc,y=qval)) +
+  geom_hex(bins = 200) +
+  scale_fill_continuous(type = "viridis") +
+  geom_hline(aes(yintercept = 5, color = "red"), linetype="dashed") + 
+  scale_x_log10() +
+  scale_y_log10() +
+  theme_bw()
+
+```
+
+```{r fig.width=11, fig.height=11}
+ggplot(peaks_boolean_clean3, aes(x=Sample, y=qval)) +
+  geom_violin() +
+  geom_hline(aes(yintercept = 5, color = "red"), linetype="dashed") + 
+  scale_y_log10() +
+  facet_wrap(~ Sample, scales = "free_x") +
+  theme_bw()
+
+
+ggplot(peaks_boolean_clean3, aes(x=fc,y=pval)) +
+  geom_hex(bins = 200) +
+  scale_fill_continuous(type = "viridis") +
+  geom_hline(aes(yintercept = 5, color = "red"), linetype="dashed") + 
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(~ Sample) +
+  theme_bw()
+
+
+```
+
+
+## Filter peaks that have qval > 0.00001
+
+In table that is 5 qval(-log10)
+Per condition. Peak completely eliminated if it does not pass filter in any sample
+
+```{r}
+
+peaks_filter_gather <- peaks_boolean_clean3 %>%
+  filter(qval > 5)
+
+peaks_filter_wide <- peaks_filter_gather %>%
+  select(interval_id,Sample,qval) %>%
+  spread(Sample,qval)
+
+# peaks_filter_wide_noNA <- peaks_filter_wide %>%
+#   column_to_rownames("interval_id") %>%
+#   filter_all(any_vars(!is.na(.)))
+
+write.table(peaks_filter_wide, file = "Output_tables/consensus_peakfdr_filtered.csv", quote = FALSE, row.names = FALSE)
+
+```
+
+
+
+
+
+```{r}
+sessionInfo()
+```
+
