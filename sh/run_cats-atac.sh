@@ -11,7 +11,7 @@ nextflow pull nf-core/atacseq
 
 ## RUN PIPELINE
 nextflow run nf-core/atacseq \
-    --input  design_filtered2.csv \
+    --input  input_files/design_cats-atac.csv \
     --genome mm10 \
     --gtf '/camp/lab/briscoej/working/Joaquina/hpc_camp/delasj_reference_files//mm10_gtf_noheader/mm10.refGene.gtf' \
     --macs_fdr 0.00001 \
