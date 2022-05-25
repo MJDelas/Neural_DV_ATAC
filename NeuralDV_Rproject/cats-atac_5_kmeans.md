@@ -1,16 +1,9 @@
----
-title: "Clustering of accessible elements"
-output: github_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Clustering of accessible elements
+================
 
 # Clustering element dynamics by kmeans after filtering elements
 
-```{r message=FALSE}
-
+``` r
 rm(list=ls())
 
 library(RColorBrewer)
@@ -18,17 +11,17 @@ library(tidyverse)
 library(factoextra)
 library(ggrepel)
 library(ComplexHeatmap)
-
 ```
 
 ## Load data
 
-Vsd with all the samples generated in `cats-atac_2_deseq_PCA_heatmaps.md` [here](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
+Vsd with all the samples generated in
+`cats-atac_2_deseq_PCA_heatmaps.md`
+[here](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
 
-And the list of genes that we have filtered 
+And the list of genes that we have filtered
 
-```{r }
-
+``` r
 # read the vsd data from DESeq
 vsd_data <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_cats-atac_2/consensus_peaks.mLb.vsd.csv") %>%
   remove_rownames() %>%
@@ -40,13 +33,11 @@ diffexpr_time_gate <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_AT
 vsd_sub <- vsd_data %>%
   rownames_to_column("Peakid") %>% filter(Peakid %in% diffexpr_time_gate$x) %>%
   column_to_rownames("Peakid")
-
 ```
-
 
 ## Colors and shapes
 
-```{r }
+``` r
 sorted.DayGate <- c("D3_NMP","D4_1","D4_2","D4_M","D4_3",
                     "D5_1","D5_2","D5_M","D5_3",
                     "D6_1","D6_2","D6_M","D6_3")
@@ -66,15 +57,13 @@ shapes4_fill_manual = c(23,21,22,24)
 
 # Annotated heatmap with selected colors
 hm_colors = colorRampPalette(rev(brewer.pal(n = 11, name = "RdBu")))(100)
-
 ```
 
 ## Shape data
 
 Calculate average
 
-```{r}
-
+``` r
 vsd_sub_ave <- vsd_sub %>%
   rownames_to_column("order") %>%
   gather(sample, vsd, starts_with("D")) %>%
@@ -84,17 +73,19 @@ vsd_sub_ave <- vsd_sub %>%
   spread(condition, ave_vsd) %>%
   ungroup() %>%
   column_to_rownames("order")
-
 ```
 
+    ## `summarise()` has grouped output by 'order'. You can override using the
+    ## `.groups` argument.
 
 ## kmeans cluster and re-cluster
 
-The number of clusters at both steps has been tested in multiple iterations to find a stable grouping. Using seed for reproducibility. 
+The number of clusters at both steps has been tested in multiple
+iterations to find a stable grouping. Using seed for reproducibility.
 
 The function will save all the results to the folder.
 
-```{r}
+``` r
 outdir=("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_cats-atac_5_kmeans/")
 
 seed_options <- 10
@@ -265,21 +256,62 @@ atac_clustering <- function(x){
     ggsave(paste0(outdir,"Plots_",k,"ReCluster_expression_Iter_",x,".pdf"), plot=plot_violins,
            width=10, height=5, units="in", useDingbats=FALSE)
 }
-
 ```
 
 Run the function with the chosen seed.
 
-```{r}
-
+``` r
 atac_clustering(seed_options)
-
 ```
 
+    ## Warning: Quick-TRANSfer stage steps exceeded maximum (= 1083000)
 
-
-```{r sessioninfo}
+``` r
 sessionInfo()
 ```
 
-
+    ## R version 3.6.3 (2020-02-29)
+    ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+    ## Running under: macOS Catalina 10.15.7
+    ## 
+    ## Matrix products: default
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+    ## 
+    ## locale:
+    ## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+    ## 
+    ## attached base packages:
+    ## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+    ## [8] base     
+    ## 
+    ## other attached packages:
+    ##  [1] ComplexHeatmap_2.2.0 ggrepel_0.9.1        factoextra_1.0.7    
+    ##  [4] forcats_0.5.1        stringr_1.4.0        dplyr_1.0.8         
+    ##  [7] purrr_0.3.4          readr_2.1.2          tidyr_1.2.0         
+    ## [10] tibble_3.1.6         ggplot2_3.3.5        tidyverse_1.3.1     
+    ## [13] RColorBrewer_1.1-3  
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] Rcpp_1.0.8.3        circlize_0.4.14     lubridate_1.8.0    
+    ##  [4] png_0.1-7           assertthat_0.2.1    digest_0.6.29      
+    ##  [7] utf8_1.2.2          R6_2.5.1            cellranger_1.1.0   
+    ## [10] backports_1.4.1     reprex_2.0.1        evaluate_0.15      
+    ## [13] httr_1.4.2          pillar_1.7.0        GlobalOptions_0.1.2
+    ## [16] rlang_1.0.2         readxl_1.4.0        rstudioapi_0.13    
+    ## [19] GetoptLong_1.0.5    rmarkdown_2.13      labeling_0.4.2     
+    ## [22] textshaping_0.3.6   munsell_0.5.0       broom_0.7.12       
+    ## [25] compiler_3.6.3      modelr_0.1.8        xfun_0.30          
+    ## [28] systemfonts_1.0.4   pkgconfig_2.0.3     shape_1.4.6        
+    ## [31] htmltools_0.5.2     tidyselect_1.1.2    fansi_1.0.3        
+    ## [34] crayon_1.5.1        tzdb_0.3.0          dbplyr_2.1.1       
+    ## [37] withr_2.5.0         jsonlite_1.8.0      gtable_0.3.0       
+    ## [40] lifecycle_1.0.1     DBI_1.1.2           magrittr_2.0.3     
+    ## [43] scales_1.1.1        cli_3.2.0           stringi_1.7.6      
+    ## [46] farver_2.1.0        fs_1.5.2            xml2_1.3.3         
+    ## [49] ragg_1.2.2          ellipsis_0.3.2      generics_0.1.2     
+    ## [52] vctrs_0.4.0         rjson_0.2.20        tools_3.6.3        
+    ## [55] glue_1.6.2          hms_1.1.1           parallel_3.6.3     
+    ## [58] fastmap_1.1.0       yaml_2.3.5          clue_0.3-60        
+    ## [61] colorspace_2.0-3    cluster_2.1.2       rvest_1.0.2        
+    ## [64] knitr_1.38          haven_2.4.3
