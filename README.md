@@ -24,7 +24,8 @@ Make links here:
     - [Differentially accessible elements](NeuralDV_Rproject/cats-atac_4_DiffAcc_filter.md)
     - [kmeans clustering](NeuralDV_Rproject/cats-atac_5_kmeans.md)
 - Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
-    - script
+    - [CaTS-ATAC and ChIP](sh/run_deeptools_atac_chip.sh)
+    - [FOXA2 ChIP](sh/run_deeptools_atac_Foxa2chip.sh)
 - Metaplot of ChIPseq over ATAC peaks, and ATAC clusters over ChIPseq peaks
 - Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
 - Most variable footprints across p0-M
