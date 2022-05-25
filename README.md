@@ -21,7 +21,7 @@ Make links here:
     - [Differential accessibility between SAG concentrations](NeuralDV_Rproject/cats-atac_3_cross_condition_diffacc.md)
 - Global accessibility analysis (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)):
     - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
-    - differential accessibility
+    - [Differentially accessible elements](NeuralDV_Rproject/cats-atac_4_DiffAcc_filter.md)
     - kmeans clustering
 - Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
     - script
