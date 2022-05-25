@@ -81,7 +81,7 @@ hm_colors = colorRampPalette(rev(brewer.pal(n = 11, name = "RdBu")))(100)
 ## Run Deseq2
 Only run once. It will take a while. 
 
-If already run, skil to Import Deseq2 results
+If already run, skip to Import Deseq2 results
 
 ### Differential accessibility between domains (include NMP)
 
