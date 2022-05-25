@@ -17,17 +17,19 @@ Make links here:
     - [summary and scripts](docs/chip-seq_processing.md)
 - Bulk ATAC-seq processing (using [nf-core](https://nf-co.re/atacseq)):
     - [pipeline script](sh/run_atac-ifoxa2.sh)
-- Comparison of accessibility across conditions
+- Comparison of accessibility across conditions (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html))
     - [Differential accessibility between SAG concentrations](NeuralDV_Rproject/cats-atac_3_cross_condition_diffacc.md)
-- Global accessibility analysis: PCA and differentially accessible elements selection
+- Global accessibility analysis (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)):
     - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
+    - differential accessibility
+    - kmeans clustering
 - Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
     - script
 - Metaplot of ChIPseq over ATAC peaks, and ATAC clusters over ChIPseq peaks
 - Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
 - Most variable footprints across p0-M
 - Most variable footprints across all: p3-specific
-- Differential accessibility in inducible Foxa2
+- Differential accessibility in inducible Foxa2 (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html))
     - [Analysis and plots](NeuralDV_Rproject/ifoxa2-atac_1_maplot.md)
 - Intersect 
 - Plotting intersects 
