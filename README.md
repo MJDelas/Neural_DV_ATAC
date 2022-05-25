@@ -22,9 +22,12 @@ Make links here:
 - Global accessibility analysis: PCA and differentially accessible elements selection
     - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
 - Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
+    - script
+- Metaplot of ChIPseq over ATAC peaks, and ATAC clusters over ChIPseq peaks
 - Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
 - Most variable footprints across p0-M
 - Most variable footprints across all: p3-specific
 - Differential accessibility in inducible Foxa2
+    - do next 
 - Intersect 
 - Plotting intersects 
