@@ -22,7 +22,7 @@ Make links here:
 - Global accessibility analysis (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)):
     - [PCA and correlation heatmaps](NeuralDV_Rproject/cats-atac_2_deseq_PCA_heatmaps.md)
     - [Differentially accessible elements](NeuralDV_Rproject/cats-atac_4_DiffAcc_filter.md)
-    - kmeans clustering
+    - [kmeans clustering](NeuralDV_Rproject/cats-atac_5_kmeans.md)
 - Heatmap visualization of ATAC-seq and ChIP-seq (using [deeptools](https://deeptools.readthedocs.io/en/develop/)):
     - script
 - Metaplot of ChIPseq over ATAC peaks, and ATAC clusters over ChIPseq peaks
