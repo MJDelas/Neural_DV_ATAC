@@ -118,8 +118,8 @@ Useful for ploting heatmaps elsewhere
 dds_counts <- counts(dds, normalized = TRUE)
 vsd_data <- assay(vsd)
 
-# write.table(dds_counts, file = "1_output_tables/consensus_peaks.mLb.clN.normCounts.txt", quote = FALSE, row.names = TRUE)
-# write.csv(vsd_data, file = "1_output_tables/consensus_peaks.mLb.vsd.csv", quote = FALSE)
+write.table(dds_counts, file = "/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_cats-atac_2/consensus_peaks.mLb.clN.normCounts.txt", quote = FALSE, row.names = TRUE)
+write.csv(vsd_data, file = "/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_cats-atac_2/consensus_peaks.mLb.vsd.csv", quote = FALSE)
 
 ```
 
