@@ -28,6 +28,6 @@ Make links here:
 - Most variable footprints across p0-M
 - Most variable footprints across all: p3-specific
 - Differential accessibility in inducible Foxa2
-    - do next 
+    - [Analysis and plots](NeuralDV_Rproject/ifoxa2-atac_1_maplot.md)
 - Intersect 
 - Plotting intersects 
