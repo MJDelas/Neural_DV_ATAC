@@ -21,7 +21,7 @@ The default atacseq pipeline threshold includes very small peaks. The option --m
 
 ## Load data
 
-The boolean file from nf-core/atacseq (results/bwa/mergedLibrary/macs/broadPeak/consensus/consensus_peaks.mLb.clN.boolean.annotatePeaks.txt)
+The boolean file from nf-core/atacseq `cats_atac/results/bwa/mergedLibrary/macs/broadPeak/consensus/consensus_peaks.mLb.clN.boolean.annotatePeaks.txt`
   
 
 ```{r }

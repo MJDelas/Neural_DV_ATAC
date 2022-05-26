@@ -14,7 +14,7 @@ filter peaks as follows.
 ## Load data
 
 The boolean file from nf-core/atacseq
-(results/bwa/mergedLibrary/macs/broadPeak/consensus/consensus\_peaks.mLb.clN.boolean.annotatePeaks.txt)
+`results/bwa/mergedLibrary/macs/broadPeak/consensus/consensus\_peaks.mLb.clN.boolean.annotatePeaks.txt`
 
 ``` r
 peaks_boolean <- read.delim(file="/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_cats-atac_1/consensus_peaks.mLb.clN.boolean.annotatePeaks.txt",header=TRUE, stringsAsFactors = FALSE)
