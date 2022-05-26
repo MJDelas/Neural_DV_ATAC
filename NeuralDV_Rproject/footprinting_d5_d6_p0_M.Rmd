@@ -23,17 +23,27 @@ library(patchwork)
 
 ```
 
+### Input data
+
 Ouput of bindetect is in `BINDetect_25conditions_arch/bindetect_results.txt`
 
-```{r}
-setwd("~/Documents/BriscoeLab/Project_ATAC_DV/22-03-18_BINDetect_footprint_nonP3_nonD4/")
+Motif annotation excel file was downloaded from Vierstra's [motif clustering](https://www.vierstra.org/resources/motif_clustering#downloads)
 
-Motif_preds_tabl <- read.table("BINDected_results/bindetect_results.txt",header=T,sep="\t",stringsAsFactors=F)
+Archetype to possible genes lookup table `lookup_motif_gene_archetype_21-11-23.csv` is custom made. 
+
+```{r}
+
+
+
+Motif_preds_tabl <- read.table("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/bindetect_results.txt",header=T,sep="\t",stringsAsFactors=F)
 
 
 ```
 
+Clean up table and keep relevant samples.
+
 ```{r}
+
 Motif_scores <- Motif_preds_tabl %>%
   select(c("output_prefix" ,"name","motif_id","cluster", "motif_logo","total_tfbs",contains("_score"))) %>%
   select(-contains("_3_mean_score")) %>%
@@ -44,12 +54,28 @@ Motif_scores <- Motif_preds_tabl %>%
 
 ### table to group motifs to archetypes
 ```{r}
-archetypes_clusterid <- read_excel("../20-11-23_Motifs_to_RNA/motif_annotations.xlsx",2)  
-archtypes_names <- read_excel("../20-11-23_Motifs_to_RNA/motif_annotations.xlsx",1)  
+archetypes_clusterid <- read_excel("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/motif_annotations.xlsx",2)  
+archtypes_names <- read_excel("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/motif_annotations.xlsx",1)  
 
 archtypes_2_motifs <- archetypes_clusterid %>% select(c("Cluster_ID","Motif","Database","Consensus")) %>%
   left_join(archtypes_names %>% select(c("Cluster_ID","Name","DBD","Seed_motif")), by="Cluster_ID")
 archtypes_2_motifs$Cluster_ID <- as.character(archtypes_2_motifs$Cluster_ID)
+
+```
+
+### Archetype to possible TFs
+
+```{r}
+gene_motifs_cluster <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/lookup_motif_gene_archetype_21-11-23.csv", stringsAsFactors =FALSE,
+                                colClasses=c("character","character"))
+```
+
+### Gene expression
+
+```{r}
+
+gene_exp <- read.csv("../20-07-30_RNA_DEA/Export_counts/RNA_normCounts_filter1.csv", stringsAsFactors =FALSE )
+
 
 ```
 
@@ -73,85 +99,6 @@ sorted.samples <- c("D3_0_NMP","D4_0_1","D4_10_1","D5_0_1","D5_10_1","D6_0_1","D
 
 colorJD <- c("#477d92","#e5a114","#e3602b",
             "#2e525e","#9f7113","#ab4117")
-
-
-# colorJD <- c("#878787","#6da4ba","#f0be56","#ec936f","#5bb357",
-#              "#477d92","#e5a114","#e3602b","#009640",
-#              "#2e525e","#9f7113","#ab4117","#044a23")
-
-```
-
-
-
-## Heatmap of all motifs - p3 and NMP and D4 excluded
-
-```{r all-motifs-hm, fig.width=9, fig.height=8}
-scores_plot <- Motif_preds_tabl %>% select(c("output_prefix","name","motif_id","cluster", ends_with("_score"))) %>%
-  select(-contains("_3_mean_score")) %>%
-  select(-contains("NMP_mean_score")) %>%
-  select(-starts_with("D4"))
-  
-
-# make heatmap of scores
-scores_hm <- scores_plot %>% column_to_rownames("output_prefix") %>% select(ends_with("_score")) 
-
-scores_hm_z <- t(scale(t(scores_hm))) 
-# same as t(apply(scores_hm, 1, function(r) (r - mean(r))/sd(r)))
-
-
-## Annotation to color by archetype
-scores_cluster_ann <- scores_plot %>%
-  left_join(archtypes_2_motifs, by = c("motif_id"="Motif")) %>%
-  mutate(Archetype=paste(Cluster_ID,Name,sep = "_")) %>%
-  remove_rownames() %>%
-  column_to_rownames("output_prefix") %>%
-  select("Archetype")
-
-rowAnn <- HeatmapAnnotation(
-    df = scores_cluster_ann,
-    which = 'row', # 'col' (samples) or 'row' (gene) annotation?
-    na_col = 'white', # default colour for any NA values in the annotation data-frame, 'ann'
-    #col = ann_color_JD,
-    annotation_height = 0.6,
-    annotation_width = unit(1, 'cm'),
-    gap = unit(1, 'mm'))
-
-
-Heatmap(scores_hm_z, name="Motif z-score",
-                col = hm_colors,
-                right_annotation = rowAnn,
-        
-                # row (gene) parameters
-                cluster_rows = TRUE,
-                show_row_dend = TRUE,
-                #row_title = 'Statistically significant genes',
-                row_title_side = 'left',
-                row_title_gp = gpar(fontsize = 12,  fontface = 'bold'),
-                row_title_rot = 90,
-                show_row_names = FALSE,
-                row_names_gp = gpar(fontsize = 6, fontface = 'bold'),
-                row_names_side = 'right',
-                row_dend_width = unit(25,'mm'),
-                
-                # column (sample) parameters
-                cluster_columns = TRUE,
-                show_column_dend = TRUE,
-                column_title = '',
-                column_title_side = 'bottom',
-                column_title_gp = gpar(fontsize = 12, fontface = 'bold'),
-                column_title_rot = 0,
-                show_column_names = TRUE,
-                column_names_gp = gpar(fontsize = 10, fontface = 'bold'),
-                column_names_max_height = unit(10, 'cm'),
-                column_dend_height = unit(25,'mm'),
-                
-                # cluster methods for rows and columns
-                clustering_distance_columns = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_columns = 'ward.D2',
-                clustering_distance_rows = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_rows = 'ward.D2',
-        )
-
 
 ```
 
@@ -182,7 +129,6 @@ scores_plot_topchanges <- Motif_preds_tabl %>%
   ungroup() %>%
   spread(item_changes, value_change)
 
-
 scores_plot_topovalues <- Motif_preds_tabl %>%
   select("output_prefix", ends_with("_pvalue")) %>%
   gather(item_pvalue, value_pvalue, ends_with("_pvalue")) %>% 
@@ -200,6 +146,11 @@ With the top motifs, get heatmap
 
 ```{r most-variable-motifs, fig.height=7, fig.width=8}
 
+scores_plot <- Motif_preds_tabl %>% select(c("output_prefix","name","motif_id","cluster", ends_with("_score"))) %>%
+  select(-contains("_3_mean_score")) %>%
+  select(-contains("NMP_mean_score")) %>%
+  select(-starts_with("D4"))
+
 scores_subset <- scores_plot %>% 
   filter(output_prefix %in% as.character(scores_plot_topovalues$output_prefix) | output_prefix %in% as.character(scores_plot_topchanges$output_prefix)) 
 
@@ -214,286 +165,6 @@ scores_cluster_ann <- scores_subset %>%
   column_to_rownames("output_prefix") %>%
   select("Archetype")
 
-rowAnn <- HeatmapAnnotation(
-    df = scores_cluster_ann,
-    which = 'row', # 'col' (samples) or 'row' (gene) annotation?
-    na_col = 'white', # default colour for any NA values in the annotation data-frame, 'ann'
-    #col = ann_color_JD,
-    annotation_height = 0.6,
-    annotation_width = unit(1, 'cm'),
-    gap = unit(1, 'mm'))
-
-## make column annotation
-## Make metadata file, same as  DESeq but for heatmaps
-genecolData_first <- data.frame(Sample_ID = colnames(scores_subset)) %>%
-  filter(grepl("_score", Sample_ID)) %>%
-  mutate(Sample_ID=gsub("_mean_score","",Sample_ID))
-genecolData_first <- genecolData_first %>% 
-  separate(Sample_ID,into=c("Day","SAG","Gate"), sep="_", remove=FALSE) %>%
-  mutate(Condition=paste(Day,SAG,Gate, sep="_"),
-         DaySAG=paste(Day,SAG,sep = "_"),
-         DayGate=paste(Day,Gate,sep="_"))
-genecolData_first <- as.data.frame(unclass(genecolData_first))
-
-phen_data <- genecolData_first %>%
-  select(c("Sample_ID","DayGate","Day","SAG")) %>%
-  remove_rownames() %>%
-  column_to_rownames("Sample_ID")
-
-
-ann_color_JD <- list(
-  DayGate = c(D3_NMP="#878787",D4_1="#6da4ba",D5_1="#477d92", D6_1="#2e525e",
-              D4_2="#f0be56",D5_2="#e5a114",D6_2="#9f7113",
-              D4_M="#ec936f",D5_M="#e3602b",D6_M="#ab4117",
-              D4_3="#5bb357",D5_3="#009640",D6_3="#044a23"),
-  SAG = c(`0`="#f6f6f6",`10`="#cecece",`100`="#808080",`500`="#595959"),
-  Day = c(D3="#fadede",D4="#f3aaaa",D5="#e96666",D6="#cf1e1e"),
-  Rep = c(R1="#ebeb77", R2="#77b1eb", R3="#eb7777"))
-
-
-# Build the annotation for the complex heatmap
-heatmap_ann <- HeatmapAnnotation(df=phen_data, col=ann_color_JD)
-
-
-
-## data for heatmap
-scores_subset_hm <- scores_subset %>%
-  column_to_rownames("output_prefix") %>% select(starts_with("D")) 
-
-scores_subset_hm_z <- t(scale(t(scores_subset_hm))) 
-# same as t(apply(scores_hm, 1, function(r) (r - mean(r))/sd(r)))
-
-
-Heatmap(scores_subset_hm_z, name="Motif z-score",
-                col = hm_colors,
-                right_annotation = rowAnn,
-                top_annotation = heatmap_ann,
-        
-                # row (gene) parameters
-                cluster_rows = TRUE,
-                show_row_dend = TRUE,
-                #row_title = 'Statistically significant genes',
-                row_title_side = 'left',
-                row_title_gp = gpar(fontsize = 12,  fontface = 'bold'),
-                row_title_rot = 90,
-                show_row_names = FALSE,
-                row_names_gp = gpar(fontsize = 2, fontface = 'bold'),
-                row_names_side = 'right',
-                row_dend_width = unit(25,'mm'),
-                
-                # column (sample) parameters
-                cluster_columns = TRUE,
-                show_column_dend = TRUE,
-                column_title = '',
-                column_title_side = 'bottom',
-                column_title_gp = gpar(fontsize = 12, fontface = 'bold'),
-                column_title_rot = 0,
-                show_column_names = TRUE,
-                column_names_gp = gpar(fontsize = 10, fontface = 'bold'),
-                column_names_max_height = unit(10, 'cm'),
-                column_dend_height = unit(25,'mm'),
-                
-                # cluster methods for rows and columns
-                clustering_distance_columns = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_columns = 'ward.D2',
-                clustering_distance_rows = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_rows = 'ward.D2',
-        )
-
-
-# printed landscape 28 x 9
-```
-
-
-
-
-## Heatmap of top motif in cluster
-Plot only clusters
-
-```{r top-motif-per-arch, fig.height=15, fig.width=7}
-
-scores_subset_cluster = scores_subset %>%
-  left_join(archtypes_2_motifs, by = c("motif_id"="Motif")) %>%
-  mutate(Archetype=paste(Cluster_ID,Name,sep = "_")) %>%
-  gather(sample, mean_score, ends_with("_score")) %>%
-  group_by(output_prefix) %>%
-  mutate(score_var = var(mean_score)) %>%
-  ungroup() %>% group_by(Archetype) %>%
-  top_n(1,score_var) %>%
-  select(-score_var, -output_prefix, -name, -motif_id, -cluster, -Database) %>% # eliminate the name of the motif
-  unique() %>%
-  spread(sample,mean_score)
-  
-
-top_motif_per_achr = scores_subset %>%
-  left_join(archtypes_2_motifs, by = c("motif_id"="Motif")) %>%
-  mutate(Archetype=paste(Cluster_ID,Name,sep = "_")) %>%
-  gather(sample, mean_score, ends_with("_score")) %>%
-  group_by(output_prefix) %>%
-  mutate(score_var = var(mean_score)) %>%
-  ungroup() %>% group_by(Archetype) %>%
-  top_n(1,score_var) %>%
-  select(-score_var, -name, -motif_id, -cluster, -Database) %>% # leave the motif name that was highest var
-  unique() %>%
-  spread(sample,mean_score)
-
-
-### FIX later - 1 motif not matched to archetype
-top_motif_per_achr %>% filter(Archetype=="NA_NA")
-
-#write.csv(top_motif_per_achr, file="Topvar_motif_by_archetypes.csv", quote = FALSE)
-
-scores_1percluster_ann <- scores_subset_cluster %>%
-  select(c("Archetype","DBD","Name","Cluster_ID", ends_with("_score"))) %>%
-  remove_rownames() %>%
-  column_to_rownames("Archetype") %>%
-  select("DBD")
-
-scores_subset_hm <- scores_subset_cluster %>%
-  remove_rownames() %>%
-  column_to_rownames("Archetype") %>% select(ends_with("_score")) 
-
-scores_subset_hm_z <- t(scale(t(scores_subset_hm))) 
-# same as t(apply(scores_hm, 1, function(r) (r - mean(r))/sd(r)))
-
-## make column annotation
-## Make metadata file, same as  DESeq but for heatmaps
-genecolData_first <- data.frame(Sample_ID = colnames(scores_subset_cluster)) %>%
-  filter(grepl("_score", Sample_ID)) %>%
-  mutate(Sample_ID=gsub("_mean_score","",Sample_ID))
-genecolData_first <- genecolData_first %>% 
-  separate(Sample_ID,into=c("Day","SAG","Gate"), sep="_", remove=FALSE) %>%
-  mutate(Condition=paste(Day,SAG,Gate, sep="_"),
-         DaySAG=paste(Day,SAG,sep = "_"),
-         DayGate=paste(Day,Gate,sep="_"))
-genecolData_first <- as.data.frame(unclass(genecolData_first))
-
-phen_data <- genecolData_first %>%
-  select(c("Sample_ID","DayGate","Day","SAG")) %>%
-  remove_rownames() %>%
-  column_to_rownames("Sample_ID")
-
-
-ann_color_JD <- list(
-  DayGate = c(D3_NMP="#878787",D4_1="#6da4ba",D5_1="#477d92", D6_1="#2e525e",
-              D4_2="#f0be56",D5_2="#e5a114",D6_2="#9f7113",
-              D4_M="#ec936f",D5_M="#e3602b",D6_M="#ab4117",
-              D4_3="#5bb357",D5_3="#009640",D6_3="#044a23"),
-  SAG = c(`0`="#f6f6f6",`10`="#cecece",`100`="#808080",`500`="#595959"),
-  Day = c(D3="#fadede",D4="#f3aaaa",D5="#e96666",D6="#cf1e1e"),
-  Rep = c(R1="#ebeb77", R2="#77b1eb", R3="#eb7777"))
-
-
-# Build the annotation for the complex heatmap
-heatmap_ann <- HeatmapAnnotation(df=phen_data, col=ann_color_JD)
-
-
-
-rowAnn <- HeatmapAnnotation(
-    df = scores_1percluster_ann,
-    which = 'row', # 'col' (samples) or 'row' (gene) annotation?
-    na_col = 'white', # default colour for any NA values in the annotation data-frame, 'ann'
-    #col = ann_color_JD,
-    annotation_height = 0.6,
-    annotation_width = unit(1, 'cm'),
-    gap = unit(1, 'mm'))
-
-
-
-Heatmap(scores_subset_hm_z, name="Motif z-score",
-                col = hm_colors,
-                top_annotation = heatmap_ann,
-                right_annotation = rowAnn,
-        
-                # row (gene) parameters
-                cluster_rows = TRUE,
-                show_row_dend = TRUE,
-                #row_title = 'Statistically significant genes',
-                row_title_side = 'left',
-                row_title_gp = gpar(fontsize = 12,  fontface = 'bold'),
-                row_title_rot = 90,
-                show_row_names = TRUE,
-                row_names_gp = gpar(fontsize = 6, fontface = 'bold'),
-                row_names_side = 'right',
-                row_dend_width = unit(25,'mm'),
-                
-                # column (sample) parameters
-                cluster_columns = TRUE,
-                show_column_dend = TRUE,
-                column_title = '',
-                column_title_side = 'bottom',
-                column_title_gp = gpar(fontsize = 12, fontface = 'bold'),
-                column_title_rot = 0,
-                show_column_names = TRUE,
-                column_names_gp = gpar(fontsize = 10, fontface = 'bold'),
-                column_names_max_height = unit(10, 'cm'),
-                column_dend_height = unit(25,'mm'),
-                
-                # cluster methods for rows and columns
-                clustering_distance_columns = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_columns = 'ward.D2',
-                clustering_distance_rows = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_rows = 'ward.D2'
-        )
-
-```
-
-
-### Plot for fig
-
-```{r hm-top-fig, fig.height=8, fig.width=6}
-
-dbdlist <- scores_1percluster_ann %>% filter(DBD !="<NA>") %>% pull(DBD) %>% unique()
-DBDcolors <- colorRampPalette(brewer.pal(8, "Set1"))(length(dbdlist))
-
-names(DBDcolors) <- dbdlist 
-
-#row ann with colors 
-rowAnn <- HeatmapAnnotation(
-    df = scores_1percluster_ann,
-    which = 'row', # 'col' (samples) or 'row' (gene) annotation?
-    na_col = 'white', # default colour for any NA values in the annotation data-frame, 'ann'
-    col = list(DBD=c(DBDcolors)),
-    annotation_height = 0.6,
-    annotation_width = unit(1, 'cm'),
-    gap = unit(1, 'mm'))
-
-Heatmap(scores_subset_hm_z, name="Motif z-score",
-                col = hm_colors,
-                top_annotation = heatmap_ann,
-                right_annotation = rowAnn,
-        
-                # row (gene) parameters
-                cluster_rows = TRUE,
-                show_row_dend = TRUE,
-                #row_title = 'Statistically significant genes',
-                row_title_side = 'left',
-                row_title_gp = gpar(fontsize = 12,  fontface = 'bold'),
-                row_title_rot = 90,
-                show_row_names = TRUE,
-                row_names_gp = gpar(fontsize = 6, fontface = 'bold'),
-                row_names_side = 'right',
-                row_dend_width = unit(25,'mm'),
-                
-                # column (sample) parameters
-                cluster_columns = TRUE,
-                show_column_dend = TRUE,
-                column_title = '',
-                column_title_side = 'bottom',
-                column_title_gp = gpar(fontsize = 12, fontface = 'bold'),
-                column_title_rot = 0,
-                show_column_names = TRUE,
-                column_names_gp = gpar(fontsize = 10, fontface = 'bold'),
-                column_names_max_height = unit(10, 'cm'),
-                column_dend_height = unit(25,'mm'),
-                
-                # cluster methods for rows and columns
-                clustering_distance_columns = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_columns = 'ward.D2',
-                clustering_distance_rows = function(x) as.dist(1 - cor(t(x))),
-                clustering_method_rows = 'ward.D2'
-        )
-        
 ```
 
 
@@ -522,11 +193,9 @@ scores_subset_plot_z_gather <- scores_subset_plot_z %>%
 Upload the lookup table and the gene expression matrix
 
 ```{r gene-exp-tables}
-gene_motifs_cluster <- read.csv("../20-11-23_Motifs_to_RNA/lookup_motif_gene_archetype_21-11-23.csv", stringsAsFactors =FALSE,
-                                colClasses=c("character","character"))
 
- 
 gene_2_clusterID_all <- gene_motifs_cluster %>% select("Cluster_ID","mouse_genename") %>% unique()
+
 gene_2_clusterID <- gene_2_clusterID_all %>% 
   filter(!is.na(mouse_genename))
 
@@ -534,12 +203,6 @@ gene_2_arch <- gene_2_clusterID %>%
   left_join(archtypes_2_motifs, by = "Cluster_ID") %>%
   mutate(Archetype=paste(Cluster_ID,Name,sep = "_"))
 
-
-## trying to get this table cleaner and fuller 
-
-gene_exp <- read.csv("../20-07-30_RNA_DEA/Export_counts/RNA_normCounts_filter1.csv", stringsAsFactors =FALSE )
-
- 
 ```
 
 
@@ -555,11 +218,6 @@ gene_exp_preclean <- gene_exp %>%
   group_by(Condition, genename) %>%
   summarise(ave_count = mean(norm_counts))
 
-# Filter gene expression 
-# ggplot(gene_exp_preclean, aes(x=Condition, y=log2(ave_count))) +
-#   geom_violin() +
-#   geom_hline(yintercept = log2(100), linetype="dashed") +
-#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 # Only keep genes where at least 1 Condition has more than 100 normalized counts (average across reps)
 gene_exp_clean <- gene_exp %>%
@@ -585,81 +243,6 @@ gene_2_arch_expressionfiltered = gene_2_arch %>%
 
 
  
-```
-
-
-
-Write a function to plot 
-
-```{r function-score-RNA, message=FALSE}
-
-outdir="Plots_Archetypes_RNA/"
-
-plot_scores_RNA <- function(x){
-  
-  clean_x = gsub("/","-",x)
-  
-  sub_zscores = zscores_arch_clean %>%
-  filter(Archetype==x)
-  
-  sub_genes = gene_2_arch %>% filter(Archetype==x)
-  
-  sub_exp = gene_exp_clean %>% filter(genename %in% as.character(sub_genes$mouse_genename))
-  
-  sub_plot = sub_zscores %>%
-    left_join(sub_exp, by = c("sample"="Condition")) 
-  
-  plot_gg <- ggplot(sub_plot, aes(x=ave_count, y=zscore)) +
-  geom_smooth(method=lm, formula = y ~ x) +
-  geom_point(aes(color=DayGate)) +
-  scale_color_manual(values = colorJD) +
-  facet_wrap( ~ genename, scales = "free_x") +
-  theme_bw(base_size = 6) +
-  theme(aspect.ratio = 1)
-  
-  ggsave(paste0(outdir,"Arch_zscores_RNA_",clean_x,".pdf"), plot=plot_gg,
-        width=7, height=5, units="in", useDingbats=FALSE)
-  
-  sub_corr <- sub_plot %>%
-    group_by(genename) %>%
-    mutate(arch2gene_corr = cor(zscore,ave_count)) %>%
-    select(Archetype,Cluster_ID,Cluster_name,genename,arch2gene_corr) %>%
-    unique()
-  
-  sub_fit <- sub_plot %>%
-    group_by(genename) %>%
-    do(fitgene =  glance(lm(zscore ~ ave_count, data = .))) %>%
-    unnest(fitgene) %>%
-    mutate(Archetype=x)
-  
-  sub_fit_corr <- sub_fit %>%
-    inner_join(sub_corr, by=c("genename","Archetype"))
-
-  write.csv(sub_fit_corr, file=paste0(outdir,"Table_fit_cor_",clean_x,".csv"),
-                row.names = F, quote = F)
-} 
-
-
-
-
-```
-
-
-List of archetypes:
-from individual motifs -> significant -> most variable motif per archetype representing
-
-```{r, message=FALSE, echo=FALSE,  results = 'hide', include=FALSE}
-# top_arch <-intersect(zscores_arch_clean$Archetype, gene_2_arch$Archetype) %>% unique()
-top_arch <- intersect(zscores_arch_clean$Archetype, gene_2_arch_expressionfiltered$Archetype) %>% unique() 
-
-#gene_2_clusterID
-# zscores_arch_clean
-# scores_subset_cluster
-
-#test=c("5_HD/5"         ,  "239_MBD2"   ,     "14_CUX/1"     ,    "156_E2F/2" )
-
-lapply(top_arch,plot_scores_RNA)
-
 ```
 
 
@@ -699,89 +282,13 @@ get_reg_fit_arch_RNA <- function(x){
   sub_fit_corr
 } 
 
+top_arch <- intersect(zscores_arch_clean$Archetype, gene_2_arch_expressionfiltered$Archetype) %>% unique() 
+
 Arch_gene_fit_all <- lapply(top_arch, get_reg_fit_arch_RNA)
 
 Arch_gene_fit_table <- do.call(rbind,Arch_gene_fit_all)
 
 ```
-
-
-
-
-## Plot all motifs for each archetype
-
-Clean
-
-```{r, clean-scores}
-
-## Annotation to color by archetype
-scores_cluster_arch_plot <- scores_subset %>%
-  left_join(archtypes_2_motifs, by = c("motif_id"="Motif")) %>%
-  mutate(Archetype=paste(Cluster_ID,Name,sep = "_")) %>%
-  select(output_prefix,Archetype, ends_with("_score"))
-
-scores_cluster_arch_plot_gather <- scores_cluster_arch_plot %>%
-  gather("sample","score", ends_with("_score")) %>%
-  mutate(sample=gsub("_mean_score","",sample),
-         sample=factor(sample, levels = sorted.samples)) %>%
-  separate(sample,into=c("Day","SAG","Gate"), sep="_", remove=FALSE) %>%
-  mutate(Condition=paste(Day,SAG,Gate, sep="_"),
-         DaySAG=paste(Day,SAG,sep = "_"),
-         DayGate=paste(Day,Gate,sep="_")) %>%
-  mutate(DayGate = factor(DayGate, levels = sorted.DayGate))
-
-```
-
-Function and print plot
-
-```{r, function-scores-per-arch}
-
-outdir="Plots_scores_Arch/"
-
-# x="1_HD/1"
-
-plot_scores_per_Arch <- function(x){
-  
-  clean_x = gsub("/","-",x)
-  
-  # Subset one archetype, all sig motifs
-  scores_sub_1arch <- scores_cluster_arch_plot_gather %>% filter(Archetype %in% x)
-  
-  # Classic palette BuPu, with 4 colors
-  coul <- rev(brewer.pal(4, "Greys"))
-
-  # Add as many colors to this palette as motifs to plot
-  coul <- colorRampPalette(coul)(length(scores_sub_1arch$output_prefix %>% unique()))
-
-  plot_gg <- ggplot(scores_sub_1arch, aes(x=sample, y=score, group=output_prefix)) +
-    geom_line(aes(color=output_prefix)) +
-    geom_point(aes(fill=factor(DayGate)), size=2, shape=21, stroke=0) +
-    #geom_point(aes(color=DayGate)) +
-    scale_fill_manual(values = colorJD) +
-    scale_color_manual(values = coul) +
-    facet_wrap(~ Archetype) +
-    theme_bw(base_size = 6) +
-    theme(aspect.ratio = 1) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  
-    ggsave(paste0(outdir,"Motif_scores_perArch_",clean_x,".pdf"), plot=plot_gg,
-        width=7, height=5, units="in", useDingbats=FALSE)
-}
-
-```
-
-Run
-```{r, echo=FALSE, message=FALSE, include=FALSE}
-
-# top arch should not depend on RNA correlations - use gene_2_arch
-top_arch <- intersect(zscores_arch_clean$Archetype, gene_2_arch$Archetype) %>% unique() 
-
-lapply(top_arch, plot_scores_per_Arch)
-
-
-```
-
-
 
 
 ### Plot the top Correlated 
@@ -827,33 +334,6 @@ ggplot(top_sub_plot, aes(x=ave_count, y=zscore, group=mouse_genename)) +
 
 ### Plot individual ones 
 
-```{r}
-archetype = "262_GLI"
-
-
-test_whichzscores = scores_subset_plot_z_gather %>% separate(Archetype, into = c("Cluster_ID","Cluster_name"), sep = "_", remove = FALSE) %>%
-  filter(Archetype==archetype)
-  
-
-test_whichgenes <- gene_2_arch %>% filter(Archetype==archetype)
-
-test_whichgene_exp <- gene_exp_clean %>% filter(genename %in% as.character(test_whichgenes$mouse_genename))
-
-test_corr <- test_whichzscores %>%
-  left_join(test_whichgene_exp, by = c("sample"="Condition")) %>%
-  group_by(genename) %>%
-  mutate(arch2gene_corr = cor(zscore,ave_count))
-
-ggplot(test_corr, aes(x=ave_count, y=zscore)) +
-  geom_smooth(method=lm) +
-  geom_point(aes(color=DayGate, shape=SAG)) +
-  scale_color_manual(values = colorJD) +
-  facet_wrap( ~ genename, scales = "free_x") +  
-  theme_bw(base_size = 12) +
-  theme(aspect.ratio = 1)
-
-
-```
 
 ```{r}
 archetype = "5_HD/5"
@@ -939,35 +419,6 @@ ggplot(test_corr, aes(x=ave_count, y=zscore)) +
 
 
 ```
-
-```{r}
-archetype = "69_MIES"
-
-
-test_whichzscores = scores_subset_plot_z_gather %>% separate(Archetype, into = c("Cluster_ID","Cluster_name"), sep = "_", remove = FALSE) %>%
-  filter(Archetype==archetype)
-  
-
-test_whichgenes <- gene_2_arch %>% filter(Archetype==archetype)
-
-test_whichgene_exp <- gene_exp_clean %>% filter(genename %in% as.character(test_whichgenes$mouse_genename))
-
-test_corr <- test_whichzscores %>%
-  left_join(test_whichgene_exp, by = c("sample"="Condition")) %>%
-  group_by(genename) %>%
-  mutate(arch2gene_corr = cor(zscore,ave_count))
-
-ggplot(test_corr, aes(x=ave_count, y=zscore)) +
-  geom_smooth(method=lm) +
-  geom_point(aes(color=DayGate, shape=SAG)) +
-  scale_color_manual(values = colorJD) +
-  facet_wrap( ~ genename, scales = "free_x")+  
-  theme_bw(base_size = 12) +
-  theme(aspect.ratio = 1)
-
-
-```
-
 
 ## Plot the RNA and the motif scores side by side for fig
 
