@@ -28,6 +28,7 @@ Make links here:
     - [FOXA2 ChIP](sh/run_deeptools_atac_Foxa2chip.sh)
 - Metaplot of ChIPseq over ATAC peaks, and ATAC clusters over ChIPseq peaks
 - Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
+    - [Scripts](docs/tobias_allscripts.md)
 - Most variable footprints across p0-M
 - Most variable footprints across all: p3-specific
 - Differential accessibility in inducible Foxa2 (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html))
