@@ -2,7 +2,8 @@
 
 Footprint score were calculated using [TOBIAS](https://github.com/loosolab/TOBIAS), installed following the documentation on their wiki. 
 
-The scripts used were as follows
+The scripts below will reproduced the analysis performed in this paper. 
+To use this tool in further work, we are also developing a nextflow pipeline: [nf-tobias](https://github.com/luslab/briscoe-nf-tobias)
 
 ## 1. TOBIAS ATACorrect
 
