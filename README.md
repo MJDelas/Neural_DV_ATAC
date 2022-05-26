@@ -31,7 +31,8 @@ All figures generated using R can be visualized as markdown (.md files).
 - Metaplot of ChIPseq over ATAC peaks, and ATAC clusters over ChIPseq peaks
 
 ## RNA-seq analysis
-- Normalized counts export and key genes
+- Normalized counts export and key genes (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html))
+    - [Analysis and plot](NeuralDV_Rproject/rna_1.md)
 
 ## Footprinting analysis
 - Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
