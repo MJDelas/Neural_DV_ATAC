@@ -90,7 +90,8 @@ echo "Done: run 'go_footprint.sh' to submit jobs"
 
 Script to run BINDetect on all samples. It requires very high memory. 
 
-We used motifs from the following four databases concatenated into `motifs_archetypes.meme`
+We used the same motifs databases as [Vierstra 2020](https://doi.org/10.1038/s41586-020-2528-x) to use their archetype clustering in downstream analysis. 
+Motifs were downloaded from [here]](https://www.vierstra.org/resources/motif_clustering#included-motif-databases-v10)and concatenated into `motifs_archetypes.meme`
 - `HOCOMOCOv11_core_HUMAN_mono_meme_format.meme`
 - `HOCOMOCOv11_core_MOUSE_mono_meme_format.meme`
 - `JASPAR2018_CORE_vertebrates_non-redundant_pfms.meme`
