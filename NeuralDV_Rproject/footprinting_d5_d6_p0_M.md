@@ -1,15 +1,9 @@
----
-title: "Footprinting across p0-M"
-output: github_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Footprinting across p0-M
+================
 
 ## Footprinting differences within the shared chromatin landscape of p0-M
 
-```{r message=FALSE}
+``` r
 rm(list=ls())
 
 library(RColorBrewer)
@@ -20,70 +14,59 @@ library(ComplexHeatmap)
 library(readxl)
 library(broom)
 library(patchwork)
-
 ```
 
 ### Input data
 
-Ouput of bindetect is in `BINDetect_25conditions_arch/bindetect_results.txt`
+Ouput of bindetect is in
+`BINDetect_25conditions_arch/bindetect_results.txt`
 
-Motif annotation excel file was downloaded from Vierstra's [motif clustering](https://www.vierstra.org/resources/motif_clustering#downloads)
+Motif annotation excel file was downloaded from Vierstra’s [motif
+clustering](https://www.vierstra.org/resources/motif_clustering#downloads)
 
-Archetype to possible genes lookup table `lookup_motif_gene_archetype_21-11-23.csv` is custom made. 
+Archetype to possible genes lookup table
+`lookup_motif_gene_archetype_21-11-23.csv` is custom made.
 
-```{r}
-
-
-
+``` r
 Motif_preds_tabl <- read.table("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/bindetect_results.txt",header=T,sep="\t",stringsAsFactors=F)
-
-
 ```
 
 Clean up table and keep relevant samples.
 
-```{r}
-
+``` r
 Motif_scores <- Motif_preds_tabl %>%
   select(c("output_prefix" ,"name","motif_id","cluster", "motif_logo","total_tfbs",contains("_score"))) %>%
   select(-contains("_3_mean_score")) %>%
   select(-contains("NMP_mean_score"))
-
-
 ```
 
 ### table to group motifs to archetypes
-```{r}
+
+``` r
 archetypes_clusterid <- read_excel("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/motif_annotations.xlsx",2)  
 archtypes_names <- read_excel("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/motif_annotations.xlsx",1)  
 
 archtypes_2_motifs <- archetypes_clusterid %>% select(c("Cluster_ID","Motif","Database","Consensus")) %>%
   left_join(archtypes_names %>% select(c("Cluster_ID","Name","DBD","Seed_motif")), by="Cluster_ID")
 archtypes_2_motifs$Cluster_ID <- as.character(archtypes_2_motifs$Cluster_ID)
-
 ```
 
 ### Archetype to possible TFs
 
-```{r}
+``` r
 gene_motifs_cluster <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/lookup_motif_gene_archetype_21-11-23.csv", stringsAsFactors =FALSE,
                                 colClasses=c("character","character"))
 ```
 
 ### Gene expression
 
-```{r}
-
+``` r
 gene_exp <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_rna_1/RNA_normCounts_filter1.csv", stringsAsFactors =FALSE )
-
-
 ```
-
-
 
 ## My colors and other settings
 
-```{r}
+``` r
 # Annotated heatmap with selected colors
 hm_colors = colorRampPalette(rev(brewer.pal(n = 11, name = "RdBu")))(100)
 
@@ -99,20 +82,17 @@ sorted.samples <- c("D3_0_NMP","D4_0_1","D4_10_1","D5_0_1","D5_10_1","D6_0_1","D
 
 colorJD <- c("#477d92","#e5a114","#e3602b",
             "#2e525e","#9f7113","#ab4117")
-
 ```
 
+## Filter “significant” as the BINDetect volcano plot does
 
-## Filter "significant" as the BINDetect volcano plot does
-
-The volcano plots shows
-y_min = np.percentile(yvalues[yvalues > 0], 5)	#5% smallest pvalues
-x_min, x_max = np.percentile(xvalues, [5, 95])	#5% smallest and largest changes
+The volcano plots shows y\_min = np.percentile(yvalues\[yvalues \> 0\],
+5) \#5% smallest pvalues x\_min, x\_max = np.percentile(xvalues, \[5,
+95\]) \#5% smallest and largest changes
 
 Filter lowest pval and largest changes PER comparison
 
-```{r sign-motifs}
-
+``` r
 scores_plotTop <- Motif_preds_tabl %>% 
   select(c("output_prefix",ends_with("_score"))) %>%
   select(-contains("_3_mean_score")) %>%
@@ -136,15 +116,13 @@ scores_plot_topovalues <- Motif_preds_tabl %>%
   top_frac(-0.05,value_pvalue) %>%
   ungroup() %>%
   spread(item_pvalue, value_pvalue)
-
-
 ```
 
 ## Most variable motifs
+
 Get the most variable motifs and the archetype grouping
 
-```{r most-variable-motifs, fig.height=7, fig.width=8}
-
+``` r
 scores_plot <- Motif_preds_tabl %>% select(c("output_prefix","name","motif_id","cluster", ends_with("_score"))) %>%
   select(-contains("_3_mean_score")) %>%
   select(-contains("NMP_mean_score")) %>%
@@ -163,12 +141,9 @@ scores_cluster_ann <- scores_subset %>%
   remove_rownames() %>%
   column_to_rownames("output_prefix") %>%
   select("Archetype")
-
 ```
 
-
-```{r}
-
+``` r
 scores_subset_cluster = scores_subset %>%
   left_join(archtypes_2_motifs, by = c("motif_id"="Motif")) %>%
   mutate(Archetype=paste(Cluster_ID,Name,sep = "_")) %>%
@@ -194,10 +169,9 @@ scores_subset_hm <- scores_subset_cluster %>%
 scores_subset_hm_z <- t(scale(t(scores_subset_hm))) 
 ```
 
-
 ## calculate z-scores
-```{r zscore-calculate }
 
+``` r
 scores_subset_plot_z <- scores_subset_hm_z %>%
   as.data.frame() %>%
   rownames_to_column("Archetype")
@@ -213,14 +187,11 @@ scores_subset_plot_z_gather <- scores_subset_plot_z %>%
   mutate(DayGate = factor(DayGate, levels = sorted.DayGate))
 ```
 
-
-
 # Correlation with gene expression
 
 Upload the lookup table and the gene expression matrix
 
-```{r gene-exp-tables}
-
+``` r
 gene_2_clusterID_all <- gene_motifs_cluster %>% select("Cluster_ID","mouse_genename") %>% unique()
 
 gene_2_clusterID <- gene_2_clusterID_all %>% 
@@ -229,13 +200,11 @@ gene_2_clusterID <- gene_2_clusterID_all %>%
 gene_2_arch <- gene_2_clusterID %>%
   left_join(archtypes_2_motifs, by = "Cluster_ID") %>%
   mutate(Archetype=paste(Cluster_ID,Name,sep = "_"))
-
 ```
 
-
 Clean tables
-```{r clean-rna-tables }
 
+``` r
 # gene_exp_preclean <- gene_exp %>%
 #   dplyr::rename(genename=X) %>%
 #   gather(sample, norm_counts, starts_with("D")) %>%
@@ -266,17 +235,11 @@ zscores_arch_clean <- scores_subset_plot_z_gather %>%
 # archtypes that still have genes
 gene_2_arch_expressionfiltered = gene_2_arch %>%
   filter(mouse_genename %in% gene_exp_clean$genename)
-
-
-
- 
 ```
-
 
 To save a long list of correlations
 
-```{r function-all-cor-fits}
-
+``` r
 get_reg_fit_arch_RNA <- function(x){
   
   clean_x = gsub("/","-",x)
@@ -312,28 +275,31 @@ get_reg_fit_arch_RNA <- function(x){
 top_arch <- intersect(zscores_arch_clean$Archetype, gene_2_arch_expressionfiltered$Archetype) %>% unique() 
 
 Arch_gene_fit_all <- lapply(top_arch, get_reg_fit_arch_RNA)
-
-Arch_gene_fit_table <- do.call(rbind,Arch_gene_fit_all)
-
 ```
 
+    ## Warning in cor(zscore, ave_count): the standard deviation is zero
 
-### Plot the top Correlated 
+``` r
+Arch_gene_fit_table <- do.call(rbind,Arch_gene_fit_all)
+```
 
-Get the top archetypes-gene from Arch_gene_fit_table
+### Plot the top Correlated
+
+Get the top archetypes-gene from Arch\_gene\_fit\_table
 
 Go back to function-all-cor-fits and get the full table
 
-
-```{r plot-top-corr, fig.width=11}
-
+``` r
 Top_fit <- Arch_gene_fit_table %>%
   dplyr::filter(adj.r.squared > 0.6)
 
   
 hist(Arch_gene_fit_table$adj.r.squared)
+```
 
+![](footprinting_d5_d6_p0_M_files/figure-gfm/plot-top-corr-1.png)<!-- -->
 
+``` r
 top_sub_zscores = zscores_arch_clean %>%
   filter(Archetype %in% Top_fit$Archetype)
   
@@ -354,15 +320,13 @@ ggplot(top_sub_plot, aes(x=ave_count, y=zscore, group=mouse_genename)) +
   facet_wrap(Archetype ~ mouse_genename, scales = "free_x", ncol = 6) +
   theme_bw(base_size = 12) +
   theme(aspect.ratio = 1)
-
-
 ```
 
+![](footprinting_d5_d6_p0_M_files/figure-gfm/plot-top-corr-2.png)<!-- -->
 
-### Plot individual ones 
+### Plot individual ones
 
-
-```{r}
+``` r
 archetype = "5_HD/5"
 
 
@@ -386,12 +350,13 @@ ggplot(test_corr, aes(x=ave_count, y=zscore)) +
   facet_wrap( ~ genename, scales = "free_x")+  
   theme_bw(base_size = 12) +
   theme(aspect.ratio = 1)
-
-
 ```
 
+    ## `geom_smooth()` using formula 'y ~ x'
 
-```{r}
+![](footprinting_d5_d6_p0_M_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
 archetype = "281_PAX/1"
 
 
@@ -415,11 +380,13 @@ ggplot(test_corr, aes(x=ave_count, y=zscore)) +
   facet_wrap( ~ genename, scales = "free_x")+  
   theme_bw(base_size = 12) +
   theme(aspect.ratio = 1)
-
-
 ```
 
-```{r}
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](footprinting_d5_d6_p0_M_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
 archetype = "63_Ebox/CAGATGG"
 
 
@@ -443,13 +410,15 @@ ggplot(test_corr, aes(x=ave_count, y=zscore)) +
   facet_wrap( ~ genename, scales = "free_x")+  
   theme_bw(base_size = 12) +
   theme(aspect.ratio = 1)
-
-
 ```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](footprinting_d5_d6_p0_M_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ## Plot the RNA and the motif scores side by side for fig
 
-```{r, fig-RNA-motifs}
+``` r
 #ordered by gate
 sorted.DayGate2 <- c("D3_NMP","D4_1","D5_1","D6_1",
                      "D4_2","D5_2","D6_2",
@@ -542,13 +511,14 @@ p2 <- ggplot(sub_zscores, aes(x=DayGate, y=mean_score, group=Gate)) +
   theme(aspect.ratio = 1,axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 p2 + p1
-
-
 ```
 
+    ## `geom_smooth()` using formula 'y ~ x'
+    ## `geom_smooth()` using formula 'y ~ x'
 
+![](footprinting_d5_d6_p0_M_files/figure-gfm/fig-RNA-motifs-1.png)<!-- -->
 
-```{r, fig-RNA-motifs2}
+``` r
 archetype = "63_Ebox/CAGATGG"
 gene="Olig2"
 
@@ -644,12 +614,16 @@ p4 <- ggplot(sub_counts_clean, aes(x=DayGate, y=norm_counts, group=Gate)) +
 
 
 p2+p1+p3+p4
-
-
 ```
 
+    ## `geom_smooth()` using formula 'y ~ x'
+    ## `geom_smooth()` using formula 'y ~ x'
+    ## `geom_smooth()` using formula 'y ~ x'
+    ## `geom_smooth()` using formula 'y ~ x'
 
-```{r, fig-RNA-motifs3}
+![](footprinting_d5_d6_p0_M_files/figure-gfm/fig-RNA-motifs2-1.png)<!-- -->
+
+``` r
 archetype = "281_PAX/1"
 gene="Pax6"
 
@@ -693,8 +667,84 @@ p2 <- ggplot(sub_zscores, aes(x=DayGate, y=mean_score, group=Gate)) +
 p2+p1
 ```
 
+    ## `geom_smooth()` using formula 'y ~ x'
+    ## `geom_smooth()` using formula 'y ~ x'
 
+![](footprinting_d5_d6_p0_M_files/figure-gfm/fig-RNA-motifs3-1.png)<!-- -->
 
-```{r}
+``` r
 sessionInfo()
 ```
+
+    ## R version 3.6.3 (2020-02-29)
+    ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+    ## Running under: macOS Catalina 10.15.7
+    ## 
+    ## Matrix products: default
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+    ## 
+    ## locale:
+    ## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+    ## 
+    ## attached base packages:
+    ## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+    ## [8] base     
+    ## 
+    ## other attached packages:
+    ##  [1] patchwork_1.1.1      broom_0.7.12         readxl_1.4.0        
+    ##  [4] ComplexHeatmap_2.2.0 matrixStats_0.61.0   genomation_1.18.0   
+    ##  [7] forcats_0.5.1        stringr_1.4.0        dplyr_1.0.8         
+    ## [10] purrr_0.3.4          readr_2.1.2          tidyr_1.2.0         
+    ## [13] tibble_3.1.6         ggplot2_3.3.5        tidyverse_1.3.1     
+    ## [16] RColorBrewer_1.1-3  
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] nlme_3.1-153                bitops_1.0-7               
+    ##  [3] fs_1.5.2                    lubridate_1.8.0            
+    ##  [5] httr_1.4.2                  GenomeInfoDb_1.22.1        
+    ##  [7] tools_3.6.3                 backports_1.4.1            
+    ##  [9] utf8_1.2.2                  R6_2.5.1                   
+    ## [11] KernSmooth_2.23-20          mgcv_1.8-38                
+    ## [13] DBI_1.1.2                   BiocGenerics_0.32.0        
+    ## [15] colorspace_2.0-3            GetoptLong_1.0.5           
+    ## [17] seqPattern_1.18.0           withr_2.5.0                
+    ## [19] tidyselect_1.1.2            compiler_3.6.3             
+    ## [21] cli_3.2.0                   rvest_1.0.2                
+    ## [23] Biobase_2.46.0              xml2_1.3.3                 
+    ## [25] DelayedArray_0.12.3         labeling_0.4.2             
+    ## [27] rtracklayer_1.46.0          scales_1.1.1               
+    ## [29] digest_0.6.29               Rsamtools_2.2.3            
+    ## [31] rmarkdown_2.13              XVector_0.26.0             
+    ## [33] pkgconfig_2.0.3             htmltools_0.5.2            
+    ## [35] plotrix_3.8-2               highr_0.9                  
+    ## [37] dbplyr_2.1.1                fastmap_1.1.0              
+    ## [39] BSgenome_1.54.0             GlobalOptions_0.1.2        
+    ## [41] rlang_1.0.2                 rstudioapi_0.13            
+    ## [43] impute_1.60.0               farver_2.1.0               
+    ## [45] shape_1.4.6                 generics_0.1.2             
+    ## [47] jsonlite_1.8.0              BiocParallel_1.20.1        
+    ## [49] RCurl_1.98-1.6              magrittr_2.0.3             
+    ## [51] GenomeInfoDbData_1.2.2      Matrix_1.3-2               
+    ## [53] Rcpp_1.0.8.3                munsell_0.5.0              
+    ## [55] S4Vectors_0.24.4            fansi_1.0.3                
+    ## [57] lifecycle_1.0.1             stringi_1.7.6              
+    ## [59] yaml_2.3.5                  SummarizedExperiment_1.16.1
+    ## [61] zlibbioc_1.32.0             plyr_1.8.7                 
+    ## [63] parallel_3.6.3              crayon_1.5.1               
+    ## [65] lattice_0.20-45             splines_3.6.3              
+    ## [67] Biostrings_2.54.0           haven_2.4.3                
+    ## [69] circlize_0.4.14             hms_1.1.1                  
+    ## [71] knitr_1.38                  pillar_1.7.0               
+    ## [73] GenomicRanges_1.38.0        rjson_0.2.20               
+    ## [75] reshape2_1.4.4              stats4_3.6.3               
+    ## [77] reprex_2.0.1                XML_3.99-0.3               
+    ## [79] glue_1.6.2                  evaluate_0.15              
+    ## [81] data.table_1.14.2           modelr_0.1.8               
+    ## [83] png_0.1-7                   vctrs_0.4.0                
+    ## [85] tzdb_0.3.0                  cellranger_1.1.0           
+    ## [87] gtable_0.3.0                clue_0.3-60                
+    ## [89] assertthat_0.2.1            xfun_0.30                  
+    ## [91] gridBase_0.4-7              GenomicAlignments_1.22.1   
+    ## [93] IRanges_2.20.2              cluster_2.1.2              
+    ## [95] ellipsis_0.3.2
