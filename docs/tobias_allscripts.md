@@ -4,7 +4,7 @@ Footprint score were calculated using [TOBIAS](https://github.com/loosolab/TOBIA
 
 The scripts used were as follows
 
-## 1.TOBIAS ATACorrect
+## 1. TOBIAS ATACorrect
 
 This script will generate a script per sample and `go.sh` to run all in parallel. 
 
@@ -45,7 +45,7 @@ done
 echo "Done: run 'go_correct.sh' to submit jobs"
 ```
 
-## 2.TOBIAS Footprint
+## 2. TOBIAS Footprint
 
 This will generate a script per sample to run ATACFootprint on the corrected files from the previous step
 
@@ -85,7 +85,7 @@ done
 echo "Done: run 'go_footprint.sh' to submit jobs"
 ```
 
-## 3.TOBIAS BINDetect
+## 3. TOBIAS BINDetect
 
 Script to run BINDetect on all samples. It requires very high memory. 
 
