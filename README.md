@@ -45,4 +45,5 @@ All figures generated using R can be visualized as markdown (.md files).
 - Differential accessibility in inducible Foxa2 (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html))
     - [Analysis and plots](NeuralDV_Rproject/ifoxa2-atac_1_maplot.md)
 - Intersect 
+    - [script](sh/run_intersect.sh)
 - Plotting intersects 
