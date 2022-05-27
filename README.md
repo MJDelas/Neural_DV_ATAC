@@ -38,6 +38,7 @@ All figures generated using R can be visualized as markdown (.md files).
 - Footprinting score calculations (using [TOBIAS](https://github.com/loosolab/TOBIAS)) 
     - [Scripts](docs/tobias_allscripts.md)
 - Most variable footprints across p0-M
+    - [Analysis and plots](NeuralDV_Rproject/footprinting_d5_d6_p0_M.md)
 - Most variable footprints across all: p3-specific
 
 ## Inducible Foxa2 ATACseq
