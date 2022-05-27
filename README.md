@@ -46,4 +46,5 @@ All figures generated using R can be visualized as markdown (.md files).
     - [Analysis and plots](NeuralDV_Rproject/ifoxa2-atac_1_maplot.md)
 - Intersect 
     - [script](sh/run_intersect.sh)
-- Plotting intersects 
+- Plotting intersects
+    - [Plots of intersect](NeuralDV_Rproject/ifoxa2-atac_2_intersect_plot.md)
