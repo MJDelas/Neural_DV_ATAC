@@ -39,8 +39,8 @@ All figures generated using R can be visualized as markdown (.md files).
     - [Scripts](docs/tobias_allscripts.md)
 - Most variable footprints across p0-M
     - [Analysis and plots](NeuralDV_Rproject/footprinting_d5_d6_p0_M.md)
-- Most variable footprints across all: p3-specific
-
+- Most variable footprints across all: plot of p3-specific FOX
+    - [Analysis and plots](NeuralDV_Rproject/footprinting_allconditions.md)
 ## Inducible Foxa2 ATACseq
 - Differential accessibility in inducible Foxa2 (using [Deseq2](https://bioconductor.org/packages/release/bioc/html/DESeq2.html))
     - [Analysis and plots](NeuralDV_Rproject/ifoxa2-atac_1_maplot.md)
