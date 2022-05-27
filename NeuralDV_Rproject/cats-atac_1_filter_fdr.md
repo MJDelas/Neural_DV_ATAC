@@ -11,13 +11,25 @@ The default atacseq pipeline threshold includes very small peaks. The
 option –macs\_fdr 0.00001 did not filter as expected so subsequently
 filter peaks as follows.
 
+### Set dirs
+
+``` r
+workingdir="/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/"
+subworkinput="inputs_cats-atac_1/"
+outdir="outputs_cats-atac_1/"
+
+ifelse(!dir.exists(file.path(workingdir,outdir)), dir.create(file.path(workingdir,outdir)), "Directory exists")
+```
+
+    ## [1] "Directory exists"
+
 ## Load data
 
 The boolean file from nf-core/atacseq
-`results/bwa/mergedLibrary/macs/broadPeak/consensus/consensus\_peaks.mLb.clN.boolean.annotatePeaks.txt`
+`cats_atac/results/bwa/mergedLibrary/macs/broadPeak/consensus/consensus_peaks.mLb.clN.boolean.annotatePeaks.txt`
 
 ``` r
-peaks_boolean <- read.delim(file="/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_cats-atac_1/consensus_peaks.mLb.clN.boolean.annotatePeaks.txt",header=TRUE, stringsAsFactors = FALSE)
+peaks_boolean <- read.delim(file=paste0(workingdir,subworkinput,"consensus_peaks.mLb.clN.boolean.annotatePeaks.txt"),header=TRUE, stringsAsFactors = FALSE)
 ```
 
 Clean empty columns and column names
@@ -46,7 +58,7 @@ peaks_filter_wide <- peaks_filter_gather %>%
   select(interval_id,variable,qval) %>%
   spread(variable,qval)
 
-write.table(peaks_filter_wide, file = "/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_cats-atac_1/consensus_peakfdr_filtered.csv", quote = FALSE, row.names = FALSE)
+write.table(peaks_filter_wide, file =paste0(workingdir,outdir,"consensus_peakfdr_filtered.csv"), quote = FALSE, row.names = FALSE)
 ```
 
 ``` r
