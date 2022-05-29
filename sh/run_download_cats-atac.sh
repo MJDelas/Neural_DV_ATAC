@@ -11,7 +11,7 @@ nextflow pull nf-core/fetchngs
 
 ## RUN PIPELINE
 nextflow run nf-core/fetchngs \
-    --input  geo_cats.csv \
+    --input  input_files/geo_cats.csv \
     --outdir cats-atac \
     --email joaquina.delas@crick.ac.uk \
     -profile crick \

@@ -7,6 +7,7 @@ All figures generated using R can be visualized as markdown (.md files).
 
 ## Data download
 - CaTS-ATAC (using [nf-core/fetchngs](https://nf-co.re/fetchngs))
+    - [pipeline script](sh/run_download_cats-atac.sh)
 - Fixed RNA-seq
 - Inducibled Foxa2 bulk ATAC-seq
 
