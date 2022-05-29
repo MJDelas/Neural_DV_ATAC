@@ -6,10 +6,10 @@ Custom code to reproduce all figures.
 All figures generated using R can be visualized as markdown (.md files). 
 
 ## Data download
-- CaTS-ATAC (using [nf-core/fetchngs](https://nf-co.re/fetchngs))
-    - [pipeline script](sh/run_download_cats-atac.sh)
-- Fixed RNA-seq
-- Inducibled Foxa2 bulk ATAC-seq
+- [How to download](docs/GEO_download.md) (using [nf-core/fetchngs](https://nf-co.re/fetchngs)) for datasets produced in this paper:
+    - CaTS-ATAC
+    - Fixed RNA-seq
+    - Inducibled Foxa2 bulk ATAC-seq
 
 ## Sequencing processing
 - CaTS-ATAC sequencing processing (using [nf-core/atacseq](https://nf-co.re/atacseq)): 

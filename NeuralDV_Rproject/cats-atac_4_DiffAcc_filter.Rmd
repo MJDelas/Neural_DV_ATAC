@@ -255,7 +255,7 @@ PairWiseDEseq <- lapply(c(1:length(gates)),function (x) {
 
 ```{r import-domain}
 
-PairWiseDEseq_domain <- lapply(list.files(path=workingdir,outdir,outsubdir1,pattern="Results_DESeq*", full.names=TRUE),function(x) {
+PairWiseDEseq_domain <- lapply(list.files(path=paste0(workingdir,outdir,outsubdir1),pattern="Results_DESeq*", full.names=TRUE),function(x) {
   data <- read.table(x,header=T,stringsAsFactors=F) %>% as.data.frame() %>% rownames_to_column("Intervals")
   data$Comparison <- gsub(paste0(workingdir,outdir,outsubdir1,"/Results_DESeq_"),"", x)
   data$Comparison <- gsub(".txt","",data$Comparison)
@@ -268,7 +268,7 @@ results_deseq_domain <- do.call(rbind,PairWiseDEseq_domain)
 
 ```{r import-time}
 
-PairWiseDEseq_days <- lapply(list.files(path=workingdir,outdir,outsubdir2,pattern="Results_DESeq*", full.names=TRUE),function(x) {
+PairWiseDEseq_days <- lapply(list.files(path=paste0(workingdir,outdir,outsubdir2),pattern="Results_DESeq*", full.names=TRUE),function(x) {
   data <- read.table(x,header=T,stringsAsFactors=F) %>% as.data.frame() %>% rownames_to_column("Intervals")
   data$Comparison <- gsub(paste0(workingdir,outdir,outsubdir2,"/Results_DESeq_"),"", x)
   data$Comparison <- gsub(".txt","",data$Comparison)
