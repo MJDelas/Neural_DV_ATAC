@@ -16,6 +16,17 @@ library(broom)
 library(patchwork)
 ```
 
+### Set dirs
+
+``` r
+workingdir="/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/"
+subworkinput="inputs_footprinting/"
+outdir="outputs_footprinting_p0M/"
+ifelse(!dir.exists(file.path(workingdir,outdir)), dir.create(file.path(workingdir,outdir)), "Directory exists")
+```
+
+    ## [1] TRUE
+
 ### Input data
 
 Ouput of bindetect is in
@@ -28,7 +39,7 @@ Archetype to possible genes lookup table
 `lookup_motif_gene_archetype_21-11-23.csv` is custom made.
 
 ``` r
-Motif_preds_tabl <- read.table("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/bindetect_results.txt",header=T,sep="\t",stringsAsFactors=F)
+Motif_preds_tabl <- read.table(paste0(workingdir,subworkinput,"bindetect_results.txt"),header=T,sep="\t",stringsAsFactors=F)
 ```
 
 Clean up table and keep relevant samples.
@@ -43,8 +54,8 @@ Motif_scores <- Motif_preds_tabl %>%
 ### table to group motifs to archetypes
 
 ``` r
-archetypes_clusterid <- read_excel("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/motif_annotations.xlsx",2)  
-archtypes_names <- read_excel("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/motif_annotations.xlsx",1)  
+archetypes_clusterid <- read_excel(paste0(workingdir,subworkinput,"motif_annotations.xlsx"),2)  
+archtypes_names <- read_excel(paste0(workingdir,subworkinput,"motif_annotations.xlsx"),1)  
 
 archtypes_2_motifs <- archetypes_clusterid %>% select(c("Cluster_ID","Motif","Database","Consensus")) %>%
   left_join(archtypes_names %>% select(c("Cluster_ID","Name","DBD","Seed_motif")), by="Cluster_ID")
@@ -54,14 +65,14 @@ archtypes_2_motifs$Cluster_ID <- as.character(archtypes_2_motifs$Cluster_ID)
 ### Archetype to possible TFs
 
 ``` r
-gene_motifs_cluster <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/inputs_footprinting/lookup_motif_gene_archetype_21-11-23.csv", stringsAsFactors =FALSE,
+gene_motifs_cluster <- read.csv(paste0(workingdir,subworkinput,"lookup_motif_gene_archetype_21-11-23.csv"), stringsAsFactors =FALSE,
                                 colClasses=c("character","character"))
 ```
 
 ### Gene expression
 
 ``` r
-gene_exp <- read.csv("/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_rna_1/RNA_normCounts_filter1.csv", stringsAsFactors =FALSE )
+gene_exp <- read.csv(paste0(workingdir,"outputs_rna_1/RNA_normCounts_filter1.csv"), stringsAsFactors =FALSE )
 ```
 
 ### My colors and other settings
@@ -150,7 +161,7 @@ scores_subset_cluster_motifname = scores_subset %>%
   top_n(1,score_var) %>%
   spread(sample,mean_score)
 
-write.table(scores_subset_cluster_motifname, file="/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/outputs_footprinting_p0M/Footprint_scores_variable_archetypes_p0-M.txt", quote = FALSE, row.names = TRUE)
+write.table(scores_subset_cluster_motifname, file=paste0(workingdir,outdir,"Footprint_scores_variable_archetypes_p0-M.txt"), quote = FALSE, row.names = TRUE)
 ```
 
 Keep the most variable motif score per archetype.
