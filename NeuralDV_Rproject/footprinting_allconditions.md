@@ -22,7 +22,10 @@ library(patchwork)
 workingdir="/Users/delasj/Documents/BriscoeLab/project_DV_ATAC_reproduce_analysis/"
 subworkinput="inputs_footprinting/"
 subworkdir="outputs_footprinting_allconditions/"
+ifelse(!dir.exists(file.path(workingdir,subworkdir)), dir.create(file.path(workingdir,subworkdir)), "Directory exists")
 ```
+
+    ## [1] "Directory exists"
 
 ### Input data
 
