@@ -23,7 +23,7 @@ outdir="outputs_rna_1/"
 ifelse(!dir.exists(file.path(workingdir,outdir)), dir.create(file.path(workingdir,outdir)), "Directory exists")
 ```
 
-    ## [1] TRUE
+    ## [1] "Directory exists"
 
 ## Load data
 
@@ -83,7 +83,12 @@ genecolData_first <- as.data.frame(unclass(genecolData_first))
 dds <- DESeqDataSetFromMatrix(countData = count.matrix,
                               colData = genecolData_first,
                               design = ~ Gate)
+```
 
+    ## Warning in DESeqDataSet(se, design = design, ignoreRank): some variables in
+    ## design formula are characters, converting to factors
+
+``` r
 dds <- DESeq(dds)
 ```
 
@@ -156,67 +161,94 @@ ggplot(counts_data_sub_plot, aes(x=SAG,y=Counts_norm,fill=DayGate)) +
 
 ![](rna_1_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
+## Plot Fox genes
+
+``` r
+GOIs <- c("Foxa1","Foxa2","Foxa3")
+
+counts_data_sub <- count.matrix[GOIs,]
+
+counts_data_sub_plot <- counts_data_sub %>%
+  as.data.frame() %>%
+  rownames_to_column("geneid") %>%
+  gather(Sample_ID,Counts_norm, starts_with("D")) %>%
+  separate(Sample_ID,into=c("Day","SAG","Gate","Rep"), sep="\\.", remove=FALSE) %>%
+  mutate(Condition=paste(Day,SAG,Gate, sep="_"),
+         DaySAG=paste(Day,SAG,sep = "_"),
+         DayGate=paste(Day,Gate,sep="_"),
+         Experiment=paste(SAG,Rep,sep="_")) %>%
+  mutate(DayGate = factor(DayGate, levels = sorted.DayGate),
+         geneid=factor(geneid, levels = GOIs))
+
+ggplot(counts_data_sub_plot, aes(x=SAG,y=Counts_norm,fill=DayGate)) +
+    stat_summary(aes(fill=DayGate),
+     fun = mean, geom="bar", alpha=0.8,position=position_dodge2(width=0.9,preserve = "single")) +
+    geom_point(aes(fill=DayGate), alpha=0.7, position = position_dodge2(width=0.9,preserve ="single"),color="black",shape=21) +
+  scale_fill_manual(values = colorJD) +
+  facet_grid(geneid ~ Day, scales = "free", space = "free_x") +
+  theme_bw()
+```
+
+![](rna_1_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
 ``` r
 sessionInfo()
 ```
 
-    ## R version 3.6.3 (2020-02-29)
-    ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+    ## R version 4.2.1 (2022-06-23)
+    ## Platform: x86_64-apple-darwin17.0 (64-bit)
     ## Running under: macOS Catalina 10.15.7
     ## 
     ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.2/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
     ## [1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
     ## 
     ## attached base packages:
-    ## [1] parallel  stats4    stats     graphics  grDevices utils     datasets 
-    ## [8] methods   base     
+    ## [1] stats4    stats     graphics  grDevices utils     datasets  methods  
+    ## [8] base     
     ## 
     ## other attached packages:
-    ##  [1] RColorBrewer_1.1-3          DESeq2_1.26.0              
-    ##  [3] SummarizedExperiment_1.16.1 DelayedArray_0.12.3        
-    ##  [5] BiocParallel_1.20.1         matrixStats_0.61.0         
-    ##  [7] Biobase_2.46.0              GenomicRanges_1.38.0       
-    ##  [9] GenomeInfoDb_1.22.1         IRanges_2.20.2             
-    ## [11] S4Vectors_0.24.4            BiocGenerics_0.32.0        
-    ## [13] forcats_0.5.1               stringr_1.4.0              
-    ## [15] dplyr_1.0.8                 purrr_0.3.4                
-    ## [17] readr_2.1.2                 tidyr_1.2.0                
-    ## [19] tibble_3.1.6                ggplot2_3.3.5              
-    ## [21] tidyverse_1.3.1            
+    ##  [1] RColorBrewer_1.1-3          DESeq2_1.37.6              
+    ##  [3] SummarizedExperiment_1.27.3 Biobase_2.57.1             
+    ##  [5] MatrixGenerics_1.9.1        matrixStats_0.62.0         
+    ##  [7] GenomicRanges_1.49.1        GenomeInfoDb_1.33.7        
+    ##  [9] IRanges_2.31.2              S4Vectors_0.35.4           
+    ## [11] BiocGenerics_0.43.4         forcats_0.5.2              
+    ## [13] stringr_1.4.1               dplyr_1.0.10               
+    ## [15] purrr_0.3.4                 readr_2.1.2                
+    ## [17] tidyr_1.2.1                 tibble_3.1.8               
+    ## [19] ggplot2_3.3.6               tidyverse_1.3.2            
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] colorspace_2.0-3       ellipsis_0.3.2         htmlTable_2.4.0       
-    ##  [4] XVector_0.26.0         base64enc_0.1-3        fs_1.5.2              
-    ##  [7] rstudioapi_0.13        farver_2.1.0           bit64_4.0.5           
-    ## [10] AnnotationDbi_1.48.0   fansi_1.0.3            lubridate_1.8.0       
-    ## [13] xml2_1.3.3             splines_3.6.3          cachem_1.0.6          
-    ## [16] geneplotter_1.64.0     knitr_1.38             Formula_1.2-4         
-    ## [19] jsonlite_1.8.0         broom_0.7.12           annotate_1.64.0       
-    ## [22] cluster_2.1.2          dbplyr_2.1.1           png_0.1-7             
-    ## [25] compiler_3.6.3         httr_1.4.2             backports_1.4.1       
-    ## [28] assertthat_0.2.1       Matrix_1.3-2           fastmap_1.1.0         
-    ## [31] cli_3.2.0              htmltools_0.5.2        tools_3.6.3           
-    ## [34] gtable_0.3.0           glue_1.6.2             GenomeInfoDbData_1.2.2
-    ## [37] Rcpp_1.0.8.3           cellranger_1.1.0       vctrs_0.4.0           
-    ## [40] xfun_0.30              rvest_1.0.2            lifecycle_1.0.1       
-    ## [43] XML_3.99-0.3           zlibbioc_1.32.0        scales_1.1.1          
-    ## [46] hms_1.1.1              yaml_2.3.5             memoise_2.0.1         
-    ## [49] gridExtra_2.3          rpart_4.1.16           latticeExtra_0.6-29   
-    ## [52] stringi_1.7.6          RSQLite_2.2.12         highr_0.9             
-    ## [55] genefilter_1.68.0      checkmate_2.0.0        rlang_1.0.2           
-    ## [58] pkgconfig_2.0.3        bitops_1.0-7           evaluate_0.15         
-    ## [61] lattice_0.20-45        labeling_0.4.2         htmlwidgets_1.5.4     
-    ## [64] bit_4.0.4              tidyselect_1.1.2       magrittr_2.0.3        
-    ## [67] R6_2.5.1               generics_0.1.2         Hmisc_4.6-0           
-    ## [70] DBI_1.1.2              pillar_1.7.0           haven_2.4.3           
-    ## [73] foreign_0.8-76         withr_2.5.0            survival_3.3-1        
-    ## [76] RCurl_1.98-1.6         nnet_7.3-17            modelr_0.1.8          
-    ## [79] crayon_1.5.1           utf8_1.2.2             tzdb_0.3.0            
-    ## [82] rmarkdown_2.13         jpeg_0.1-9             locfit_1.5-9.4        
-    ## [85] grid_3.6.3             readxl_1.4.0           data.table_1.14.2     
-    ## [88] blob_1.2.2             reprex_2.0.1           digest_0.6.29         
-    ## [91] xtable_1.8-4           munsell_0.5.0
+    ##  [1] bitops_1.0-7           fs_1.5.2               lubridate_1.8.0       
+    ##  [4] bit64_4.0.5            httr_1.4.4             tools_4.2.1           
+    ##  [7] backports_1.4.1        utf8_1.2.2             R6_2.5.1              
+    ## [10] DBI_1.1.3              colorspace_2.0-3       withr_2.5.0           
+    ## [13] tidyselect_1.1.2       bit_4.0.4              compiler_4.2.1        
+    ## [16] cli_3.4.0              rvest_1.0.3            xml2_1.3.3            
+    ## [19] DelayedArray_0.23.2    labeling_0.4.2         scales_1.2.1          
+    ## [22] genefilter_1.79.0      digest_0.6.29          rmarkdown_2.16        
+    ## [25] XVector_0.37.1         pkgconfig_2.0.3        htmltools_0.5.3       
+    ## [28] highr_0.9              dbplyr_2.2.1           fastmap_1.1.0         
+    ## [31] rlang_1.0.5            readxl_1.4.1           rstudioapi_0.14       
+    ## [34] RSQLite_2.2.17         farver_2.1.1           generics_0.1.3        
+    ## [37] jsonlite_1.8.0         BiocParallel_1.31.12   googlesheets4_1.0.1   
+    ## [40] RCurl_1.98-1.8         magrittr_2.0.3         GenomeInfoDbData_1.2.8
+    ## [43] Matrix_1.5-1           Rcpp_1.0.9             munsell_0.5.0         
+    ## [46] fansi_1.0.3            lifecycle_1.0.2        stringi_1.7.8         
+    ## [49] yaml_2.3.5             zlibbioc_1.43.0        blob_1.2.3            
+    ## [52] grid_4.2.1             parallel_4.2.1         crayon_1.5.1          
+    ## [55] lattice_0.20-45        splines_4.2.1          Biostrings_2.65.6     
+    ## [58] haven_2.5.1            annotate_1.75.0        KEGGREST_1.37.3       
+    ## [61] hms_1.1.2              locfit_1.5-9.6         knitr_1.40            
+    ## [64] pillar_1.8.1           geneplotter_1.75.0     codetools_0.2-18      
+    ## [67] reprex_2.0.2           XML_3.99-0.10          glue_1.6.2            
+    ## [70] evaluate_0.16          modelr_0.1.9           png_0.1-7             
+    ## [73] vctrs_0.4.1            tzdb_0.3.0             cellranger_1.1.0      
+    ## [76] gtable_0.3.1           assertthat_0.2.1       cachem_1.0.6          
+    ## [79] xfun_0.33              xtable_1.8-4           broom_1.0.1           
+    ## [82] survival_3.4-0         googledrive_2.0.0      gargle_1.2.1          
+    ## [85] memoise_2.0.1          AnnotationDbi_1.59.1   ellipsis_0.3.2

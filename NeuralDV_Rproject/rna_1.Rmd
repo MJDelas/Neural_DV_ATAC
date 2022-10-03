@@ -155,6 +155,34 @@ ggplot(counts_data_sub_plot, aes(x=SAG,y=Counts_norm,fill=DayGate)) +
   theme_bw()
 ```
 
+## Plot Fox genes
+
+```{r fig.width=7, fig.height=4}
+GOIs <- c("Foxa1","Foxa2","Foxa3")
+
+counts_data_sub <- count.matrix[GOIs,]
+
+counts_data_sub_plot <- counts_data_sub %>%
+  as.data.frame() %>%
+  rownames_to_column("geneid") %>%
+  gather(Sample_ID,Counts_norm, starts_with("D")) %>%
+  separate(Sample_ID,into=c("Day","SAG","Gate","Rep"), sep="\\.", remove=FALSE) %>%
+  mutate(Condition=paste(Day,SAG,Gate, sep="_"),
+         DaySAG=paste(Day,SAG,sep = "_"),
+         DayGate=paste(Day,Gate,sep="_"),
+         Experiment=paste(SAG,Rep,sep="_")) %>%
+  mutate(DayGate = factor(DayGate, levels = sorted.DayGate),
+         geneid=factor(geneid, levels = GOIs))
+
+ggplot(counts_data_sub_plot, aes(x=SAG,y=Counts_norm,fill=DayGate)) +
+    stat_summary(aes(fill=DayGate),
+     fun = mean, geom="bar", alpha=0.8,position=position_dodge2(width=0.9,preserve = "single")) +
+    geom_point(aes(fill=DayGate), alpha=0.7, position = position_dodge2(width=0.9,preserve ="single"),color="black",shape=21) +
+  scale_fill_manual(values = colorJD) +
+  facet_grid(geneid ~ Day, scales = "free", space = "free_x") +
+  theme_bw()
+```
+
 
 ```{r}
 sessionInfo()
