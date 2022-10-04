@@ -181,6 +181,7 @@ ggplot(counts_data_sub_plot, aes(x=SAG,y=Counts_norm,fill=DayGate)) +
   scale_fill_manual(values = colorJD) +
   facet_grid(geneid ~ Day, scales = "free", space = "free_x") +
   theme_bw()
+
 ```
 
 
