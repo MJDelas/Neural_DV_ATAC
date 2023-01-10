@@ -1,5 +1,5 @@
 # Neural DV ATAC
-Scripts for manuscript 
+Scripts for [Delas et al (2022)](https://doi.org/10.1016/j.devcel.2022.11.016) 
 
 Custom code to reproduce all figures. 
 
