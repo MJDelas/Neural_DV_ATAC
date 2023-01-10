@@ -2,10 +2,8 @@
 Scripts for genomic data analysis in [Delás et al (2022) Dev Cell](https://doi.org/10.1016/j.devcel.2022.11.016) 
 
 ### Developmental cell fate choice in neural tube progenitors employs two distinct cis-regulatory strategies
-M. JoaquinaDelás, Christos M.Kalaitzis, TamaraFawzi, MadeleineDemuth, IsabelZhang, Hannah T Stuart, Elena Costantini, Kenzo Ivanovitch, Elly M.Tanaka and JamesBriscoe
+M. Joaquina Delás, Christos M.Kalaitzis, TamaraFawzi, MadeleineDemuth, IsabelZhang, Hannah T Stuart, Elena Costantini, Kenzo Ivanovitch, Elly M.Tanaka and JamesBriscoe
 
-
-All figures generated using R can be visualized as markdown (.md files). 
 
 ## Data download
 - [How to download](docs/GEO_download.md) (using [nf-core/fetchngs](https://nf-co.re/fetchngs)) for datasets produced in this paper:
